@@ -3,7 +3,33 @@ import time
 from random import randint
 import math
 from PIL import Image, ImageTk
+from playsound import playsound
+import winsound
 
+castle_sound = 'Classic Horror 3.wav'
+forest_sound = 'Overworld.wav'
+cave_sound = 'magic-forest-by-kevin-macleod-from-filmmusic-io.wav'
+gameover_sound = 'Der Kleber Sting.wav'
+done_sound = 'done.wav'
+fire_sound = 'fire.wav'
+deadin_sound = 'deadin.wav'
+minusmr_sound = 'minusmr.wav'
+minushp_sound = 'minushp.wav'
+# Magic Forest by Kevin MacLeod
+# Link: https://incompetech.filmmusic.io/song/4012-magic-forest
+# License: http://creativecommons.org/licenses/by/4.0/
+#
+# "Overworld" Kevin MacLeod (incompetech.com)
+# Licensed under Creative Commons: By Attribution 4.0 License
+# http://creativecommons.org/licenses/by/4.0/
+#
+# "Classic Horror 3" Kevin MacLeod (incompetech.com)
+# Licensed under Creative Commons: By Attribution 4.0 License
+# http://creativecommons.org/licenses/by/4.0/
+#
+# "Der Kleber Sting" Kevin MacLeod (incompetech.com)
+# Licensed under Creative Commons: By Attribution 4.0 License
+# http://creativecommons.org/licenses/by/4.0/
 
 level = 2
 
@@ -52,10 +78,13 @@ space = 15
 root = tk.Tk()
 
 if level == 1:
+  winsound.PlaySound(forest_sound, winsound.SND_ALIAS | winsound.SND_ASYNC | winsound.SND_LOOP)
   img = ImageTk.PhotoImage(Image.open('level_2_background.jpg'))
 if level == 2:
+  winsound.PlaySound(castle_sound, winsound.SND_ALIAS | winsound.SND_ASYNC | winsound.SND_LOOP)
   img = ImageTk.PhotoImage(Image.open('level_3_background.jpg'))
 if level == 3:
+  winsound.PlaySound(cave_sound, winsound.SND_ALIAS | winsound.SND_ASYNC | winsound.SND_LOOP)
   img = ImageTk.PhotoImage(Image.open('level_1_background.png'))
 
 canvas = tk.Canvas(root, width=window_width, height=window_height)
@@ -260,6 +289,7 @@ class boss():
   def destroying_boss(self):
     """Функция удаляет побежденного врага с экрана
     """
+    playsound(minusmr_sound, False)
     self.x = delete_point
     self.size = 0
     self.boss_move()
@@ -300,7 +330,7 @@ class health_indicator():
     """
     self.length -= d
     canvas.coords(self.id, self.x, self.y, self.x + self.length,self.y)
-
+    playsound(minushp_sound, False)
 
 class mini_twins(boss):
   def __init__(self, x_mini, y_mini):
@@ -394,6 +424,7 @@ def victory(level, enemy_lives_array, enemies):
   for i in range(len(enemy_lives_array)):
     if enemy_lives_array[i].length < 0:
       if len(enemy_lives_array) == 1:
+        winsound.PlaySound(done_sound, winsound.SND_ALIAS | winsound.SND_ASYNC)
         print('\n' + '\n' + 'Great! You have destroyed boss!' + '\n' + 'Congratulations' + '\n' + 'Level ' + str(level) + ' complited')
       enemy_lives_array[i].length = 0
       enemies[i].destroying_boss()
@@ -419,6 +450,7 @@ def defeat(enemy_bullet_array, enemies):
       enemy.destroying_boss()
     character_lives.decrease(0)
     enemies.clear()
+    winsound.PlaySound(gameover_sound, winsound.SND_ALIAS | winsound.SND_ASYNC)
 
 
 def level_1():
@@ -494,6 +526,7 @@ def explosion(N, color, array_bullet, enemies, interval):
   """
   global T3
   if time.time() - T3 > interval and len(enemies) != 0:
+    playsound(fire_sound, False)
     j = randint(-1,len(enemies) - 1)
     shift = randint(0, 10)
     for i in range(N):
