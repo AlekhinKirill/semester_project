@@ -51,6 +51,11 @@ class Character:
         self.vy = 0
         self.character = 0
         self.T = []
+        self.damage1 = 10
+        self.damage2 = 10
+        self.min_bullet = 15
+        self.max_bullet = 20
+        self.interval = 1
         self.x = x
         self.y = y
         self.level_up = 1
@@ -198,8 +203,8 @@ class boss:
         self.y = y_boss
         self.x_size = x_size
         self.y_size = y_size
-        self.vx = 1
-        self.vy = 1
+        self.vx = 2
+        self.vy = 2
         self.c = 0
         self.x_direction = 1
         self.y_direction = 1
@@ -465,7 +470,7 @@ def level_1():
     enemy_lives_array = []
     enemy_lives_array.append(enemy_lives)
     choose_and_rotate(boss, 5)
-    hit_enemy(boss, enemy_lives_array, 100)
+    hit_enemy(boss, enemy_lives_array, tr.damage1)
 
     if time.time() - tr.T[2] > 2:
         for i in range(len(twins)):
@@ -544,7 +549,7 @@ def level_2():
     for boss_2 in bosses_2:
         boss_2.boss_move()
     choose_and_rotate(bosses_2, 5)
-    hit_enemy(bosses_2, enemy_lives, 100)
+    hit_enemy(bosses_2, enemy_lives, tr.damage2)
     explosion(randint(20, 30), 'red', enemy_bullet_2, bosses_2, 2)
     bullet_liquidation(enemy_bullet_2)
     hit_character(enemy_bullet_2, T, character_lives, 10)
@@ -595,7 +600,7 @@ def level_3():
                 break
             tr.T[1] = time.time()
 
-    explosion(randint(3, 5), 'cyan', enemy_bullet_3, bosses_3, 5)
+    explosion(randint(tr.min_bullet, tr.max_bullet), 'cyan', enemy_bullet_3, bosses_3, tr.interval)
     bullet_liquidation(enemy_bullet_3)
     hit_character(enemy_bullet_3, T, character_lives, 10)
     defeat(enemy_bullet_3, bosses_3)
@@ -610,12 +615,55 @@ def level_3():
         tr.img = ImageTk.PhotoImage(tr.img)
         canvas.create_image(0, 0, image=tr.img, anchor='nw')
 
+start_game = False
 
-print(
-    'Управление:' + '\n' + 'Стрелки отвечают за перемещение персонажа' + '\n' + 'Выстрел - клавиша пробел' + '\n' + 'Поменять направление стрельбы (с права на лево и наоборот) - клавиша Enter')
+def start():
+    global start_game
+    start_game = True
+
+def change_difficulty(level):
+    print('Well')
+    if level == 1:
+        tr.damage1 = 50
+    if level == 2:
+        tr.damage2 = 50
+    if level == 3:
+        tr.min_bullet = 3
+        tr.max_bullet = 5
+        tr.interval = 5
 
 
-while True:
+
+root_0 = tk.Tk()
+canvas_0 = tk.Canvas(root_0, width=window_width, height=window_height, bg = 'green2')
+canvas_0.pack(side=tk.TOP)
+but1 = tk.Button(text="Обучение: 1 ровень")
+but1.config(command= lambda : change_difficulty(1))
+but1.pack()
+but2 = tk.Button(text="Обучение: 2 ровень")
+but2.config(command=lambda : change_difficulty(2))
+but2.pack()
+but3 = tk.Button(text="Обучение: 3 ровень")
+but3.config(command=lambda : change_difficulty(3))
+but3.pack()
+but4 = tk.Button(text="Старт")
+but4.config(command=start)
+but4.pack()
+text = canvas_0.create_text(400,300, text='Добро пожаловать в Dragon_game!' + '\n' +
+                            'Управление:' + '\n' +
+                            'Стрелки отвечают за перемещение персонажа' + '\n' +
+                            'Выстрел - клавиша пробел' + '\n' +
+                            'Поменять направление стрельбы (с права на лево и наобот) - клавиша Enter' + '\n' +
+                            'В игре разработан обучающающий режим для каждого уровния.' + '\n' +
+                            'Для его запуска нажмите на соответствующую кнопку' + '\n' +
+                            'Для запуска игры в нормальном режиме нажмите "Старт"(рекомендуется)')
+while start_game == False:
+    root_0.update()
+root_0.destroy()
+
+print(tr.damage1)
+
+while start_game == True:
     level = tr.level_up
     root = tk.Tk()
     canvas = tk.Canvas(root, width=window_width, height=window_height)
