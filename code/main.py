@@ -17,6 +17,7 @@ fire_sound = 'fire.wav'
 deadin_sound = 'deadin.wav'
 minusmr_sound = 'minusmr.wav'
 minushp_sound = 'minushp.wav'
+fanfare_sound = 'fanfare.wav'
 # Magic Forest by Kevin MacLeod
 # Link: https://incompetech.filmmusic.io/song/4012-magic-forest
 # License: http://creativecommons.org/licenses/by/4.0/
@@ -601,6 +602,7 @@ def level_3():
         tr.img = tr.img.resize((800, 600), Image.ANTIALIAS)
         tr.img = ImageTk.PhotoImage(tr.img)
         canvas.create_image(0, 0, image=tr.img, anchor='nw')
+        winsound.PlaySound(fanfare_sound, winsound.SND_ALIAS | winsound.SND_ASYNC)
 
 
 def start():
