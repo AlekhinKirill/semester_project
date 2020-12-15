@@ -40,3 +40,6 @@ character_lives_y0 = 570
 character_lives_len = 299
 character_size = 50
 space = 15
+x_mini_size = 25
+y_mini_size = 37
+damage_0 = 10
