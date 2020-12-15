@@ -60,6 +60,7 @@ class Character:
         self.y = y
         self.level_up = 1
         self.img = 0
+        self.start_game = False
 
 
     def on_key_press(self, event):
@@ -115,7 +116,7 @@ def move_location(loc_name):
 tr = Character()
 
 
-class bullet:
+class Bullet:
     def __init__(self, bullet_x, bullet_y, color):
         """ Конструктор класса bullet
         Параметры:
@@ -157,7 +158,7 @@ class bullet:
         if self.x > right_border or self.x < left_border:
             self.x = tr.x
             self.y = tr.y
-            self.direction  = self.c
+            self.direction = self.c
 
 
     def destroying_bullet(self):
@@ -186,7 +187,7 @@ class bullet:
             canvas.coords(self.id, self.x - self.r, self.y - self.r, self.x + self.r, self.y + self.r)
 
 
-class boss:
+class Boss:
     def __init__(self, x_boss, y_boss, x_size, y_size, img_boss):
         """ Конструктор класса boss
             Параметры:
@@ -289,7 +290,7 @@ class boss:
         self.x_direction = randint(0, 2)
 
 
-class health_indicator:
+class Health_indicator:
     def __init__(self, length, x_0, y_0, color):
         """ Конструктор класса health_indicator
             Параметры:
@@ -318,38 +319,13 @@ class health_indicator:
         playsound(minushp_sound, False)
 
 
-class mini_twins(boss):
-    def __init__(self, x_mini, y_mini):
-        """ Конструктор класса mini_boss - двойников осного босса появляющихся раз в 30 секунд и уничтожающихся после первого попадания
-            Параметры:
-            x(int) - начальное положение по горизонтали
-            y(int) - начальное положение по вертикали
-            r(int) - радиус
-            vx(int) - скорость по оси x
-            vy(int) - скорость по оси y
-            x_direction{0, 1} - направление движение по горизонтали(0 - влево, 1 - вправо)
-            y_direction{0, 1} - направление движение по вертикали(0 - вниз, 1 - вверх)
-            color - цвет
-        """
-        self.x = x_mini
-        self.y = y_mini
-        self.x_size = 25
-        self.y_size = 37
-        self.vx = 3
-        self.vy = 3
-        self.x_direction = 1
-        self.y_direction = 1
-        self.id = canvas.create_image(self.x - int(self.x_size / 2), self.y - int(self.x_size / 2),
-                                      image=img_mini_boss, anchor='nw')
-
-
 def hit_character(array_bullet, T, strip, d):
-    """Функция изменяет длину индикатора здоровья персонажа при попадании в него
-       Параметры:
-       array_bullet(list) - список со всеми вражескими пулями, находящимися на экране
-       T(time) - время последнего попадания
-       strip(health_indicator) - индикатор здоровья персонажа
-       d(int) - величина измениния длины индикатора
+    """ Функция изменяет длину индикатора здоровья персонажа при попадании в него
+        Параметры:
+        array_bullet(list) - список со всеми вражескими пулями, находящимися на экране
+        T(time) - время последнего попадания
+        strip(health_indicator) - индикатор здоровья персонажа
+        d(int) - величина измениния длины индикатора
     """
     t = []
     for i in range(len(array_bullet)):
@@ -362,23 +338,24 @@ def hit_character(array_bullet, T, strip, d):
 
 
 def hit_enemy(array_enemyies, array_strips, d):
-    """Функция изменяет длину индикатора здоровья противника при попадании в него
-       Параметры:
-       array_enemies(list) - список со всеми противниками, находящимися на экране
-       array_strips(list) - список индикаторов здоровья противников
-       d(int) - величина измениния длины индикатора
+    """ Функция изменяет длину индикатора здоровья противника при попадании в него
+        Параметры:
+        array_enemies(list) - список со всеми противниками, находящимися на экране
+        array_strips(list) - список индикаторов здоровья противников
+        d(int) - величина измениния длины индикатора
     """
     for i in range(len(array_enemyies)):
-        if ((B.x - array_enemyies[i].x) ** 2 + (B.y - array_enemyies[i].y) ** 2) ** 0.5 < array_enemyies[i].y_size and time.time() - tr.T[1] > 1:
+        if ((B.x - array_enemyies[i].x) ** 2 + (B.y - array_enemyies[i].y) ** 2) ** 0.5 < array_enemyies[i].y_size and\
+                time.time() - tr.T[1] > 1:
             array_strips[i].decrease(d)
             tr.T[1] = time.time()
 
 
 def choose_and_rotate(enemy_array, interval):
-    """Функция выбирает одного из противников и случайным образом меняет направление его движения и величину скорости
-      Параметры:
-      enemies_array(list) - список со всеми противниками, находящимися на экране
-      interval(int) - время через которое, функция снова будет запущена
+    """ Функция выбирает одного из противников и случайным образом меняет направление его движения и величину скорости
+        Параметры:
+        enemies_array(list) - список со всеми противниками, находящимися на экране
+        interval(int) - время через которое, функция снова будет запущена
     """
     if time.time() - tr.T[0] > interval:
         if len(enemy_array) != 0:
@@ -388,9 +365,9 @@ def choose_and_rotate(enemy_array, interval):
 
 
 def bullet_liquidation(array_bullet):
-    """Функция уничтожает все пули, оказавшиеся за экраном
-      Параметры:
-      array_bullet(list) - список со всеми пулями
+    """ Функция уничтожает все пули, оказавшиеся за экраном
+        Параметры:
+        array_bullet(list) - список со всеми пулями
     """
     for b in array_bullet:
         b.bullet_move()
@@ -400,19 +377,19 @@ def bullet_liquidation(array_bullet):
 
 
 def victory(level, enemy_lives_array, enemies):
-    """Функция генерирует поздравительную надпись, если уровень пройден и уничтожает всех оставшихся второстепенных противников, пули,оставшиеся на экране и очищает все списки.
-    Эта же функция используется если уничтожен только один из противников. В этом случае он и все связанные с ним атрибуты удаляются с экрана
-      Параметры:
-      level(int) - номер уровня
-      enemy_lives_array(list) - список со всеми индикаторами здоровья основных противников
-      enemies(list) - список всех противников
+    """ Функция генерирует поздравительную надпись, если уровень пройден и уничтожает всех оставшихся второстепенных
+        противников, пули,оставшиеся на экране и очищает все списки.
+        Эта же функция используется если уничтожен только один из противников. В этом случае он и все связанные с ним
+        атрибуты удаляются с экрана
+        Параметры:
+        level(int) - номер уровня
+        enemy_lives_array(list) - список со всеми индикаторами здоровья основных противников
+        enemies(list) - список всех противников
     """
     for i in range(len(enemy_lives_array)):
         if enemy_lives_array[i].length < 0:
             if len(enemy_lives_array) == 1:
                 winsound.PlaySound(done_sound, winsound.SND_ALIAS | winsound.SND_ASYNC)
-                print(
-                    '\n' + '\n' + 'Great! You have destroyed boss!' + '\n' + 'Congratulations' + '\n' + 'Level ' + str(level) + ' complited')
                 tr.level_up = level + 1
                 root.destroy()
                 tr.x = x
@@ -428,13 +405,13 @@ def victory(level, enemy_lives_array, enemies):
 
 
 def defeat(enemy_bullet_array, enemies):
-    """Функция генерирует надпись, в случае поражения и уничтожает всех оставшихся противников, пули,оставшиеся на экране и очищает все списки
-      Параметры:
-      enemy_lives_array(list) - список со всеми индикаторами здоровья основных противников
-      enemies(list) - список всех противников
+    """ Функция генерирует надпись, в случае поражения и уничтожает всех оставшихся противников, пули,
+        оставшиеся на экране и очищает все списки
+        Параметры:
+        enemy_lives_array(list) - список со всеми индикаторами здоровья основных противников
+        enemies(list) - список всех противников
     """
     if character_lives.length < 0:
-        print('\n' + '\n' + 'You lost!' + '\n' + 'Better lack next time!')
         character_lives.length = 0
         for b in enemy_bullet_array:
             b.destroying_bullet()
@@ -454,10 +431,14 @@ def defeat(enemy_bullet_array, enemies):
 
 def level_1():
     """ Главная функция первого уровня
-        На первом уровне игрок сражается с одним главным противником, который время от времени призывает себе на помощь свою уменьшенную копию (время появления копий регулирутся параметром T).
+        На первом уровне игрок сражается с одним главным противником, который время от времени призывает себе на помощь
+        свою уменьшенную копию (время появления копий регулирутся параметром T).
         Копия уничтожается после первого попадания в нее.
         Противники двигаются с изменяющейся случайным образом скоростью ( как по модулю так и по направлению)
-        Бой происходит по принципу перестрелки: спустя некоторое время, регулируемое параметром T противник и все его копии одновременн стреляют точно в игрока, поэтому чтобы успеть среагировать необходимо постоянно деражаться далеко от противника и его копий, стараться их уничтожать.
+        Бой происходит по принципу перестрелки:
+        Спустя некоторое время, регулируемое параметром T противник и все его копии одновременн стреляют точно в игрока,
+        поэтому чтобы успеть среагировать необходимо постоянно деражаться далеко от противника и его копий,
+        стараться их уничтожать.
     """
     canvas.move(tr.character, tr.vx, tr.vy)
     tr.x += tr.vx
@@ -485,8 +466,10 @@ def level_1():
     if time.time() - tr.T[3] > 5 and len(twins) != 0:
         a = randint(left_border_1, right_border_1)
         b = randint(up_border_1, down_border_1)
-        twins.append(mini_twins(a, b))
-        enemy_bullet.append(bullet(a, b, 'red'))
+        twins.append(Boss(a, b, x_mini_size, y_mini_size, img_mini_boss))
+        twins[len(twins)-1].vx = 3
+        twins[len(twins)-1].vy = 3
+        enemy_bullet.append(Bullet(a, b, 'red'))
         tr.T[3] = time.time()
     for m in twins:
         m.boss_move()
@@ -525,7 +508,7 @@ def explosion(N, color, array_bullet, enemies, interval):
         j = randint(-1, len(enemies) - 1)
         shift = randint(0, 10)
         for i in range(N):
-            array_bullet.append(bullet(enemies[j].x, enemies[j].y, color))
+            array_bullet.append(Bullet(enemies[j].x, enemies[j].y, color))
             n = len(array_bullet) - 1
             array_bullet[n].vy = int(7 * math.sin(shift + i * 2 * math.pi / N))
             array_bullet[n].vx = int(7 * math.cos(shift + i * 2 * math.pi / N))
@@ -552,7 +535,7 @@ def level_2():
     hit_enemy(bosses_2, enemy_lives, tr.damage2)
     explosion(randint(20, 30), 'red', enemy_bullet_2, bosses_2, 2)
     bullet_liquidation(enemy_bullet_2)
-    hit_character(enemy_bullet_2, T, character_lives, 10)
+    hit_character(enemy_bullet_2, T, character_lives, damage_0)
     victory(2, enemy_lives, bosses_2)
     defeat(enemy_bullet_2, bosses_2)
 
@@ -572,17 +555,18 @@ def level_3():
     choose_and_rotate(bosses_3, 5)
 
     for i in range(len(bosses_3)):
-        if ((B.x - bosses_3[i].x) ** 2 + (B.y - bosses_3[i].y) ** 2) ** 0.5 < bosses_3[i].y_size / 2 and time.time() - tr.T[1] > 1:
+        if ((B.x - bosses_3[i].x) ** 2 + (B.y - bosses_3[i].y) ** 2) ** 0.5 < bosses_3[i].y_size / 2 and\
+                time.time() - tr.T[1] > 1:
             enemy_lives.decrease(20)
             if bosses_3[i].y_size != boss_3_x_size - 3 * delta:
                 bosses_3[i].c += 1
                 bosses_3[i].y_size -= delta
                 bosses_3[i].x_size -= delta
                 bosses_3.append(
-                    boss(bosses_3[i].x, bosses_3[i].y + delta / 2, bosses_3[i].x_size, bosses_3[i].y_size,
+                    Boss(bosses_3[i].x, bosses_3[i].y + delta / 2, bosses_3[i].x_size, bosses_3[i].y_size,
                          img_boss[bosses_3[i].c]))
                 bosses_3.append(
-                    boss(bosses_3[i].x, bosses_3[i].y + delta / 2, bosses_3[i].x_size, bosses_3[i].y_size,
+                    Boss(bosses_3[i].x, bosses_3[i].y + delta / 2, bosses_3[i].x_size, bosses_3[i].y_size,
                          img_boss[bosses_3[i].c]))
                 n = len(bosses_3)
                 bosses_3[n - 1].c = bosses_3[i].c
@@ -602,27 +586,29 @@ def level_3():
 
     explosion(randint(tr.min_bullet, tr.max_bullet), 'cyan', enemy_bullet_3, bosses_3, tr.interval)
     bullet_liquidation(enemy_bullet_3)
-    hit_character(enemy_bullet_3, T, character_lives, 10)
+    hit_character(enemy_bullet_3, T, character_lives, damage_0)
     defeat(enemy_bullet_3, bosses_3)
 
     if enemy_lives.length < 0:
         enemy_lives.length = 0
         enemy_lives.decrease(0)
-        print(
-            '\n' + '\n' + 'Great! You have destroyed boss!' + '\n' + 'Congratulations' + '\n' + 'Level 3 complited')
         tr.img = Image.open('victory.jpg')
         tr.img = tr.img.resize((800, 600), Image.ANTIALIAS)
         tr.img = ImageTk.PhotoImage(tr.img)
         canvas.create_image(0, 0, image=tr.img, anchor='nw')
 
-start_game = False
 
 def start():
-    global start_game
-    start_game = True
+    """ Функция запускает игру при нажатии соответствующей кнопки на начальном экране
+    """
+    tr.start_game = True
+
 
 def change_difficulty(level):
-    print('Well')
+    """ Функция запускает уровень в обучающем режиме при нажатии соответствующей кнопки на начальном экране
+        Параметры:
+        level{1, 2, 3} - номер уровня, который будет запущен в обучающем режиме
+    """
     if level == 1:
         tr.damage1 = 50
     if level == 2:
@@ -633,18 +619,17 @@ def change_difficulty(level):
         tr.interval = 5
 
 
-
 root_0 = tk.Tk()
-canvas_0 = tk.Canvas(root_0, width=window_width, height=window_height, bg = 'green2')
+canvas_0 = tk.Canvas(root_0, width=window_width, height=window_height, bg='green2')
 canvas_0.pack(side=tk.TOP)
 but1 = tk.Button(text="Обучение: 1 ровень")
-but1.config(command= lambda : change_difficulty(1))
+but1.config(command=lambda: change_difficulty(1))
 but1.pack()
 but2 = tk.Button(text="Обучение: 2 ровень")
-but2.config(command=lambda : change_difficulty(2))
+but2.config(command=lambda: change_difficulty(2))
 but2.pack()
 but3 = tk.Button(text="Обучение: 3 ровень")
-but3.config(command=lambda : change_difficulty(3))
+but3.config(command=lambda: change_difficulty(3))
 but3.pack()
 but4 = tk.Button(text="Старт")
 but4.config(command=start)
@@ -657,13 +642,12 @@ text = canvas_0.create_text(400,300, text='Добро пожаловать в Dr
                             'В игре разработан обучающающий режим для каждого уровния.' + '\n' +
                             'Для его запуска нажмите на соответствующую кнопку' + '\n' +
                             'Для запуска игры в нормальном режиме нажмите "Старт"(рекомендуется)')
-while start_game == False:
+
+while tr.start_game == False:
     root_0.update()
 root_0.destroy()
 
-print(tr.damage1)
-
-while start_game == True:
+while tr.start_game == True:
     level = tr.level_up
     root = tk.Tk()
     canvas = tk.Canvas(root, width=window_width, height=window_height)
@@ -693,8 +677,8 @@ while start_game == True:
     T = time.time()
     for i in range(4):
         tr.T.append(T)
-    character_lives = health_indicator(character_lives_len, character_lives_x0, character_lives_y0, 'lawn green')
-    B = bullet(bullet_x0, bullet_x0, 'orange')
+    character_lives = Health_indicator(character_lives_len, character_lives_x0, character_lives_y0, 'lawn green')
+    B = Bullet(bullet_x0, bullet_x0, 'orange')
 
     if level == 1:
         img_boss = Image.open('boss_1.png')
@@ -703,27 +687,27 @@ while start_game == True:
         img_mini_boss = Image.open('boss_1.png')
         img_mini_boss = img_mini_boss.resize((int(boss_1_x_size / 2), int(boss_1_y_size / 2)), Image.ANTIALIAS)
         img_mini_boss = ImageTk.PhotoImage(img_mini_boss)
-        boss_1 = boss(boss_x0, boss_y0, boss_1_x_size, boss_1_y_size, img_boss)
+        boss_1 = Boss(boss_x0, boss_y0, boss_1_x_size, boss_1_y_size, img_boss)
         enemy_bullet = []
-        enemy_bullet.append(bullet(bullet_x0, bullet_x0, 'red'))
+        enemy_bullet.append(Bullet(bullet_x0, bullet_x0, 'red'))
         twins = []
         twins.append(boss_1)
-        enemy_lives = health_indicator(enemy_lives_len, enemy_lives_x0, enemy_lives_y0, 'red')
+        enemy_lives = Health_indicator(enemy_lives_len, enemy_lives_x0, enemy_lives_y0, 'red')
 
     if level == 2:
         bosses_2 = []
         img_boss = Image.open('boss_2.png')
         img_boss = img_boss.resize((boss_2_x_size, boss_2_y_size), Image.ANTIALIAS)
         img_boss = ImageTk.PhotoImage(img_boss)
-        bosses_2.append(boss(boss_x0_2a, boss_y0_2a, boss_2_x_size, boss_2_y_size, img_boss))
-        bosses_2.append(boss(boss_x0_2b, boss_y0_2b, boss_2_x_size, boss_2_y_size, img_boss))
-        bosses_2.append(boss(boss_x0_2c, boss_y0_2c, boss_2_x_size, boss_2_y_size, img_boss))
+        bosses_2.append(Boss(boss_x0_2a, boss_y0_2a, boss_2_x_size, boss_2_y_size, img_boss))
+        bosses_2.append(Boss(boss_x0_2b, boss_y0_2b, boss_2_x_size, boss_2_y_size, img_boss))
+        bosses_2.append(Boss(boss_x0_2c, boss_y0_2c, boss_2_x_size, boss_2_y_size, img_boss))
         bosses_2[1].x_direction = 0
         bosses_2[2].y_direction = 0
         enemy_lives = []
         for i in range(3):
             enemy_lives.append(
-                health_indicator(int(enemy_lives_len / 2), enemy_lives_x0, enemy_lives_y0 - i * space, 'red'))
+                Health_indicator(int(enemy_lives_len / 2), enemy_lives_x0, enemy_lives_y0 - i * space, 'red'))
         enemy_bullet_2 = []
 
     if level == 3:
@@ -734,8 +718,8 @@ while start_game == True:
         for i in range(4):
             img_sizes.append(img_b.resize((boss_3_x_size - i * delta, boss_3_y_size - i * delta), Image.ANTIALIAS))
             img_boss.append(ImageTk.PhotoImage(img_sizes[i]))
-        bosses_3.append(boss(boss_x0, boss_y0, boss_3_x_size, boss_3_y_size, img_boss[0]))
-        enemy_lives = health_indicator(enemy_lives_len, enemy_lives_x0, enemy_lives_y0, 'red')
+        bosses_3.append(Boss(boss_x0, boss_y0, boss_3_x_size, boss_3_y_size, img_boss[0]))
+        enemy_lives = Health_indicator(enemy_lives_len, enemy_lives_x0, enemy_lives_y0, 'red')
         enemy_bullet_3 = []
 
     root.bind('<Key>', tr.on_key_press)
