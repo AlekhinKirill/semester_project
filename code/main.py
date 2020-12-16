@@ -178,19 +178,16 @@ class Bullet:
     def bullet_move(self):
         """Функция перемещает пулю по прошествии единицы времени.
         """
-        if self.y != bullet_x0:
-            if self.direction == 1:
-                self.x += self.vx
-            else:
-                self.x -= self.vx
-            canvas.coords(self.id, self.x - self.r, self.y - self.r, self.x + self.r, self.y + self.r)
-
-        if self.y != bullet_x0:
-            if self.direction == 1:
-                self.y += self.vy
-            else:
-                self.y -= self.vy
-            canvas.coords(self.id, self.x - self.r, self.y - self.r, self.x + self.r, self.y + self.r)
+        coordinates = [self.x, self.y, self.vx, self.vy]
+        for j in range(2):
+            if coordinates[j] != bullet_x0:
+                if self.direction == 1:
+                    coordinates[j] += coordinates[j+2]
+                else:
+                    coordinates[j] -= coordinates[j+2]
+                [self.x, self.y, self.vx, self.vy] = coordinates
+                canvas.coords(self.id, self.x - self.r, self.y - self.r, self.x + self.r,
+                              self.y + self.r)
 
 
 class Boss:
@@ -204,7 +201,6 @@ class Boss:
             vy(int) - скорость по оси y
             x_direction{0, 1} - направление движение по горизонтали(0 - влево, 1 - вправо)
             y_direction{0, 1} - направление движение по вертикали(0 - вниз, 1 - вверх)
-            color - цвет
         """
         self.x = x_boss
         self.y = y_boss
@@ -215,66 +211,39 @@ class Boss:
         self.c = 0
         self.x_direction = 1
         self.y_direction = 1
-        self.color = 'magenta4'
         self.id = canvas.create_image(self.x - int(self.x_size / 2), self.y - int(self.y_size / 2), image=img_boss,
                                       anchor='nw')
 
 
-    def change_x_direction(self):
-        """ Функция изменяет направление движения по горизонтали на противоположное
+    def change_direction(self, coordinate):
+        """ Функция изменяет направление движения противника на противоположное
         """
-        if self.x_direction == 1:
-            self.x_direction = 0
-            self.x = self.x - 2 * self.vx
-
+        parameters = [self.x_direction, self.y_direction, self.x, self.y, self.vx, self.vy]
+        if parameters[coordinate] == 1:
+            parameters[coordinate] = 0
+            parameters[coordinate + 2] = parameters[coordinate + 2] - 2 * parameters[coordinate + 4]
         else:
-            self.x_direction = 1
-            self.x = self.x + 2 * self.vx
-
-
-    def change_y_direction(self):
-        """ Функция изменяет направление движения по вертикали на противоположное
-        """
-        if self.y_direction == 1:
-            self.y_direction = 0
-            self.y = self.y - 2 * self.vy
-
-        else:
-            self.y_direction = 1
-            self.y = self.y + 2 * self.vy
+            parameters[coordinate] = 1
+            parameters[coordinate + 2] = parameters[coordinate + 2] + 2 * parameters[coordinate + 4]
+        [self.x_direction, self.y_direction, self.x, self.y, self.vx, self.vy] = parameters
 
 
     def boss_move(self):
         """Функция перемещает врага по прошествии единицы времени.
         """
-        if self.x_direction == 1:
-            if self.x < right_border_1 and self.x > left_border_1:
-                self.x += self.vx
-                canvas.move(self.id, self.vx, 0)
+        parameters = [self.x_direction, self.y_direction, self.x, self.y, self.vx, self.vy]
+        borders = [right_border_1, down_border_1, left_border_1, up_border_1]
+        for j in range(2):
+            if parameters[j+2] < borders[j] and parameters[j+2] > borders[j+2]:
+                parameters[j+2] += ((-1)**(parameters[j]+1))*parameters[j+4]
+                if j == 0:
+                    canvas.move(self.id, ((-1)**(parameters[j]+1))*parameters[j+4], 0)
+                    self.x = parameters[j+2]
+                else:
+                    canvas.move(self.id, 0, ((-1)**(parameters[j]+1))*parameters[j+4])
+                    self.y = parameters[j + 2]
             else:
-                self.change_x_direction()
-
-        else:
-            if self.x < right_border_1 and self.x > left_border_1:
-                self.x -= self.vx
-                canvas.move(self.id, -self.vx, 0)
-            else:
-                self.change_x_direction()
-
-        if self.y_direction == 1:
-            if self.y < down_border_1 and self.y > up_border_1:
-                self.y += self.vy
-                canvas.move(self.id, 0, self.vy)
-            else:
-                self.change_y_direction()
-
-        else:
-            if self.y < down_border_1 and self.y > up_border_1:
-                self.y -= self.vy
-                canvas.move(self.id, 0, -self.vy)
-            else:
-                self.change_y_direction()
-
+                self.change_direction(j)
         canvas.coords(self.id, self.x - int(self.x_size / 2), self.y - int(self.y_size / 2))
 
 
